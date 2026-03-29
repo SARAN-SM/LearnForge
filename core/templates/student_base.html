@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block hamburger %}
+<button class="hamburger" id="hamburgerBtn" aria-label="Open Menu">☰</button>
+{% endblock %}
+
+{% block sidebar_nav %}
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        Student Portal
+    </div>
+    <div class="sidebar-nav">
+        <a href="{% url 'student_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">🏠 Dashboard</a>
+        <a href="{% url 'leaderboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'leaderboard' %}active{% endif %}">🏆 Leaderboard</a>
+        <a href="{% url 'final_result' %}" class="sidebar-link {% if request.resolver_match.url_name == 'final_result' %}active{% endif %}">🎓 Final Result</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block bottom_nav %}
+<div class="bottom-nav">
+    <a href="{% url 'student_dashboard' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
+        <span style="font-size: 1.5rem; margin-bottom: 2px;">🏠</span> Dashboard
+    </a>
+    <a href="#" class="bottom-nav-item">
+        <span style="font-size: 1.5rem; margin-bottom: 2px;">📚</span> Subjects
+    </a>
+    <a href="{% url 'leaderboard' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'leaderboard' %}active{% endif %}">
+        <span style="font-size: 1.5rem; margin-bottom: 2px;">🏆</span> Leaderboard
+    </a>
+    <a href="{% url 'final_result' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'final_result' %}active{% endif %}">
+        <span style="font-size: 1.5rem; margin-bottom: 2px;">🎓</span> Final Result
+    </a>
+</div>
+{% endblock %}

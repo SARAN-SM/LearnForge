@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %}Student Sign Up - Remedial App{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 1rem 0;">
+    <div class="text-center mb-3">
+        <h1 style="color: var(--primary);">Create Your Account</h1>
+        <p class="text-muted">Select the subjects you want to enroll in and enter your current marks.</p>
+    </div>
+
+    <form method="POST" id="signupForm">
+        {% csrf_token %}
+        
+        <div class="card mb-3">
+            <h2 style="font-size: 1.2rem; margin-bottom: 1rem;">1. Personal Information</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                <div>
+                    <label>Username</label>
+                    <input type="text" name="name" required placeholder="e.g. johndoe">
+                </div>
+                <div>
+                    <label>Email Address</label>
+                    <input type="email" name="email" required placeholder="you@school.com">
+                </div>
+                <div>
+                    <label>Password</label>
+                    <input type="password" name="password" required placeholder="••••••••">
+                </div>
+                <div>
+                    <label>Confirm Password</label>
+                    <input type="password" name="confirm_password" required placeholder="••••••••">
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <h2 style="font-size: 1.2rem; margin-bottom: 1rem;">2. Subject Selection</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+                {% for subject in subjects %}
+                <div class="card subject-card" style="position: relative;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 0;">
+                        <input type="checkbox" name="subjects" value="{{ subject.id }}" class="subject-checkbox" style="width: auto; margin:0; transform: scale(1.2);">
+                        <span style="font-weight: 600; font-size: 1.1rem;">{{ subject.name }}</span>
+                    </label>
+                    
+                    <div class="marks-input-container" style="display: none; margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                        <label style="font-size: 0.9rem;">Current Marks (0-100)</label>
+                        <input type="number" name="marks_{{ subject.id }}" min="0" max="100" class="marks-input" style="margin-bottom: 0.5rem;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">
+                            <span style="color: var(--warning);">0-39: Beginner</span> | 
+                            <span style="color: var(--primary);">40-69: Intermediate</span> | 
+                            <span style="color: var(--success);">70+: Advanced</span>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="card text-center text-muted" style="grid-column: 1 / -1;">
+                    No subjects available yet. Contact an administrator.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1.1rem; padding: 1rem;">Complete Registration</button>
+    </form>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.subject-checkbox');
+        
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                const container = this.closest('.subject-card').querySelector('.marks-input-container');
+                const input = container.querySelector('.marks-input');
+                
+                if (this.checked) {
+                    container.style.display = 'block';
+                    input.setAttribute('required', 'true');
+                    input.focus();
+                } else {
+                    container.style.display = 'none';
+                    input.removeAttribute('required');
+                }
+            });
+        });
+
+        // Basic form validation for at least one subject
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            const checkedSubjects = document.querySelectorAll('.subject-checkbox:checked');
+            if(checkedSubjects.length === 0) {
+                e.preventDefault();
+                alert('Please select at least one subject to enroll in.');
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

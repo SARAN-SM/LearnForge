@@ -1,0 +1,139 @@
+{% extends 'admin_base.html' %}
+{% block title %}{{ student.username }} Details{% endblock %}
+{% block topbar_title %}Student Details{% endblock %}
+
+{% block content %}
+<div class="mb-3" style="display: flex; gap: 1rem; align-items: flex-end;">
+    <a href="{% url 'admin_students' %}" class="btn btn-outline">← Back</a>
+    <div>
+        <h1 style="color: var(--primary); margin-bottom: 0.2rem;">{{ student.username }}</h1>
+        <p class="text-muted">{{ student.email }} • Total Points: {{ student.leaderboard.all_time_points }}</p>
+    </div>
+</div>
+
+<div class="grid" style="grid-template-columns: 1fr;">
+    <div class="card mb-3">
+        <h2 style="margin-bottom: 1.5rem;">Subject Progress</h2>
+        
+        <div class="accordion-container">
+            {% for enrollment in enrollments %}
+            <div class="accordion-item" style="border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 1rem; overflow: hidden;">
+                <!-- Accordion Header -->
+                <button class="accordion-header" style="width: 100%; text-align: left; background: var(--bg); border: none; padding: 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 600;">
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <span>{{ enrollment.subject.name }}</span>
+                        {% if enrollment.subject_status == 'COMPLETED' %}
+                            <span class="badge badge-advanced">Completed</span>
+                        {% else %}
+                            <span class="badge badge-intermediate">In Progress ({{ enrollment.current_level }})</span>
+                        {% endif %}
+                    </div>
+                    <span>▼</span>
+                </button>
+                
+                <!-- Accordion Content -->
+                <div class="accordion-content" style="display: none; padding: 1rem; background: var(--card-bg); border-top: 1px solid var(--border);">
+                    <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                        <div class="card text-center" style="box-shadow: none; border: 1px solid var(--border);">
+                            <div style="font-weight: 600; margin-bottom: 0.5rem;">Beginner</div>
+                            {% if enrollment.beginner_done %}
+                                <div style="color: var(--success); font-size: 1.5rem;">✅ Complete</div>
+                            {% elif enrollment.current_level == 'BEGINNER' %}
+                                <div style="color: var(--primary); font-size: 1.5rem;">⏳ Current</div>
+                            {% else %}
+                                <div style="color: var(--text-muted); font-size: 1.5rem;">🔒 Locked</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card text-center" style="box-shadow: none; border: 1px solid var(--border);">
+                            <div style="font-weight: 600; margin-bottom: 0.5rem;">Intermediate</div>
+                            {% if enrollment.intermediate_done %}
+                                <div style="color: var(--success); font-size: 1.5rem;">✅ Complete</div>
+                            {% elif enrollment.current_level == 'INTERMEDIATE' %}
+                                <div style="color: var(--primary); font-size: 1.5rem;">⏳ Current</div>
+                            {% else %}
+                                <div style="color: var(--text-muted); font-size: 1.5rem;">🔒 Locked</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card text-center" style="box-shadow: none; border: 1px solid var(--border);">
+                            <div style="font-weight: 600; margin-bottom: 0.5rem;">Advanced</div>
+                            {% if enrollment.advanced_done %}
+                                <div style="color: var(--success); font-size: 1.5rem;">✅ Complete</div>
+                            {% elif enrollment.current_level == 'ADVANCED' %}
+                                <div style="color: var(--primary); font-size: 1.5rem;">⏳ Current</div>
+                            {% else %}
+                                <div style="color: var(--text-muted); font-size: 1.5rem;">🔒 Locked</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">This student is not enrolled in any subjects.</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="card">
+        <h2 style="margin-bottom: 1.5rem;">Quiz Attempt History</h2>
+        
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border);">
+                        <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Quiz</th>
+                        <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Score</th>
+                        <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Status</th>
+                        <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Points Earned</th>
+                        <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attempt in attempts %}
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 1rem 0.5rem;">{{ attempt.quiz.material.title }} ({{ attempt.quiz.level }})</td>
+                        <td style="padding: 1rem 0.5rem; font-weight: 600;">{{ attempt.score }}%</td>
+                        <td style="padding: 1rem 0.5rem;">
+                            {% if attempt.passed %}
+                            <span class="badge badge-advanced">Passed</span>
+                            {% else %}
+                            <span class="badge badge-beginner">Failed</span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 1rem 0.5rem; color: var(--primary);">+{{ attempt.points_earned }}</td>
+                        <td style="padding: 1rem 0.5rem; color: var(--text-muted); font-size: 0.85rem;">{{ attempt.attempted_at|date:"M d, Y H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">No attempts recorded for this student.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const headers = document.querySelectorAll('.accordion-header');
+        headers.forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                const icon = header.querySelector('span:last-child');
+                
+                if (content.style.display === 'block') {
+                    content.style.display = 'none';
+                    icon.textContent = '▼';
+                } else {
+                    content.style.display = 'block';
+                    icon.textContent = '▲';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

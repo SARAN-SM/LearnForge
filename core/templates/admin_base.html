@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block hamburger %}
+<button class="hamburger" id="hamburgerBtn" aria-label="Open Menu">☰</button>
+{% endblock %}
+
+{% block sidebar_nav %}
+<div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        Admin Portal
+    </div>
+    <div class="sidebar-nav">
+        <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">🏠 Dashboard</a>
+        <a href="{% url 'admin_materials' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_materials' %}active{% endif %}">📄 Materials</a>
+        <a href="{% url 'admin_students' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_students' %}active{% endif %}">👥 Students</a>
+        <a href="{% url 'admin_leaderboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_leaderboard' %}active{% endif %}">🏆 Leaderboard</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block bottom_nav %}
+<div class="bottom-nav">
+    <a href="{% url 'admin_dashboard' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+        <span style="font-size: 1.5rem; margin-bottom: 2px;">🏠</span> Dashboard
+    </a>
+    <a href="{% url 'admin_materials' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'admin_materials' %}active{% endif %}">
+        <span style="font-size: 1.5rem; margin-bottom: 2px;">📄</span> Materials
+    </a>
+    <a href="{% url 'admin_students' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'admin_students' %}active{% endif %}">
+        <span style="font-size: 1.5rem; margin-bottom: 2px;">👥</span> Students
+    </a>
+    <a href="{% url 'admin_leaderboard' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'admin_leaderboard' %}active{% endif %}">
+        <span style="font-size: 1.5rem; margin-bottom: 2px;">🏆</span> Leaderboard
+    </a>
+</div>
+{% endblock %}

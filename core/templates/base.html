@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0F172A">
+    
+    <title>{% block title %}Student Remedial Learning{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+    <div class="app-container">
+        
+        {% block sidebar_overlay %}
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        {% endblock %}
+
+        {% block sidebar_nav %}
+        <!-- Sidebar will be overridden by child templates (student_base / admin_base) -->
+        {% endblock %}
+
+        <div class="main-content">
+            <div class="topbar">
+                <div style="display: flex; align-items: center;">
+                    {% block hamburger %}
+                    {% endblock %}
+                    <h2 style="margin: 0; font-size: 1.2rem;">{% block topbar_title %}Remedial App{% endblock %}</h2>
+                </div>
+                <div>
+                    {% if user.is_authenticated %}
+                        <span class="text-muted" style="margin-right: 10px; display: none;" id="userNameDesk">{{ user.username }}</span>
+                        <a href="{% url 'logout' %}" class="btn btn-outline" style="padding: 0.3rem 0.6rem; min-height: 36px;">Logout</a>
+                    {% else %}
+                        <a href="/" class="btn btn-outline" style="padding: 0.3rem 0.6rem; min-height: 36px;">Home</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="card mb-2" style="background-color: var(--success); color: white; border: none; padding: 0.75rem;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+
+        {% block bottom_nav %}
+        <!-- Bottom Nav overridden by child templates -->
+        {% endblock %}
+
+    </div>
+
+    <script>
+        // Desktop elements to hide on mobile
+        if(window.innerWidth > 768) {
+            let und = document.getElementById('userNameDesk');
+            if(und) und.style.display = 'inline';
+        }
+
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        if(hamburgerBtn && sidebar && overlay) {
+            hamburgerBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            });
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

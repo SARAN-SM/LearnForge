@@ -1,0 +1,121 @@
+{% extends 'admin_base.html' %}
+{% block title %}Leaderboard{% endblock %}
+{% block topbar_title %}Global Leaderboard{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <h1 style="color: var(--primary); margin-bottom: 0.5rem;">Leaderboard Rankings</h1>
+    <p class="text-muted">Top performing students across all subjects.</p>
+</div>
+
+<div class="card">
+    <div style="display: flex; gap: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <button id="tabWeekly" class="btn btn-primary" onclick="switchTab('weekly')">This Week</button>
+        <button id="tabAllTime" class="btn btn-outline" onclick="switchTab('alltime')">All Time</button>
+    </div>
+    
+    <!-- Weekly Table -->
+    <div id="weeklyContent" style="display: block; overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--border);">
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted); width: 80px;">Rank</th>
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Student</th>
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Points (This Week)</th>
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Current Streak</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in weekly_entries %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 1rem 0.5rem; font-size: 1.5rem;">
+                        {% if forloop.counter == 1 %}🥇
+                        {% elif forloop.counter == 2 %}🥈
+                        {% elif forloop.counter == 3 %}🥉
+                        {% else %}<span style="font-size: 1rem; color: var(--text-muted); margin-left: 0.5rem;">#{{ forloop.counter }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem 0.5rem; font-weight: 500; font-size: 1.1rem;">
+                        {{ entry.student.username }}
+                    </td>
+                    <td style="padding: 1rem 0.5rem; color: var(--primary); font-weight: 700; font-size: 1.1rem;">
+                        {{ entry.weekly_points }} pts
+                    </td>
+                    <td style="padding: 1rem 0.5rem;">
+                        <span class="badge badge-beginner">🔥 {{ entry.streak_days }} days</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">No activity this week yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="text-muted text-center mt-2" style="font-size: 0.8rem;">Resets every Monday at midnight</p>
+    </div>
+
+    <!-- All Time Table -->
+    <div id="allTimeContent" style="display: none; overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--border);">
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted); width: 80px;">Rank</th>
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Student</th>
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Total Points</th>
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Join Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in all_time_entries %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 1rem 0.5rem; font-size: 1.5rem;">
+                        {% if forloop.counter == 1 %}🥇
+                        {% elif forloop.counter == 2 %}🥈
+                        {% elif forloop.counter == 3 %}🥉
+                        {% else %}<span style="font-size: 1rem; color: var(--text-muted); margin-left: 0.5rem;">#{{ forloop.counter }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem 0.5rem; font-weight: 500; font-size: 1.1rem;">
+                        {{ entry.student.username }}
+                    </td>
+                    <td style="padding: 1rem 0.5rem; color: var(--primary); font-weight: 700; font-size: 1.1rem;">
+                        {{ entry.all_time_points }} pts
+                    </td>
+                    <td style="padding: 1rem 0.5rem; color: var(--text-muted);">
+                        {{ entry.student.date_joined|date:"M d, Y" }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="padding: 2rem; text-align: center; color: var(--text-muted);">No students registered yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    function switchTab(tab) {
+        const weeklyBtn = document.getElementById('tabWeekly');
+        const allTimeBtn = document.getElementById('tabAllTime');
+        const weeklyContent = document.getElementById('weeklyContent');
+        const allTimeContent = document.getElementById('allTimeContent');
+
+        if (tab === 'weekly') {
+            weeklyBtn.className = 'btn btn-primary';
+            allTimeBtn.className = 'btn btn-outline';
+            weeklyContent.style.display = 'block';
+            allTimeContent.style.display = 'none';
+        } else {
+            allTimeBtn.className = 'btn btn-primary';
+            weeklyBtn.className = 'btn btn-outline';
+            allTimeContent.style.display = 'block';
+            weeklyContent.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}
+{% endblock %}

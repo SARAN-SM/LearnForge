@@ -1,0 +1,85 @@
+{% extends 'student_base.html' %}
+{% block title %}Certificate of Completion{% endblock %}
+{% block topbar_title %}Final Result{% endblock %}
+
+{% block content %}
+<div class="grid" style="min-height: 80vh; place-items: center; position: relative; overflow: hidden;">
+    
+    <!-- CSS Confetti Effect -->
+    <div class="confetti-container"></div>
+
+    <div class="card" style="width: 100%; max-width: 800px; padding: 4rem 2rem; text-align: center; border: 8px solid var(--primary); border-radius: 16px; background: linear-gradient(to bottom right, #ffffff, #f1f5f9); position: relative; z-index: 10;">
+        
+        <div style="font-size: 5rem; margin-bottom: 1rem; line-height: 1;">🎓</div>
+        
+        <h1 style="font-family: 'Outfit', serif; font-size: 3rem; color: var(--text-primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2rem; border-bottom: 2px solid var(--primary); padding-bottom: 1rem; display: inline-block;">Certificate of Completion</h1>
+        
+        <p class="text-muted" style="font-size: 1.2rem; margin-bottom: 1rem;">This certifies that</p>
+        <h2 style="font-family: 'Outfit', sans-serif; font-size: 2.5rem; color: var(--primary); margin-bottom: 2rem;">{{ request.user.username }}</h2>
+        
+        <p class="text-muted" style="font-size: 1.2rem; margin-bottom: 2rem;">
+            has successfully completed all required levels and demonstrated mastery across the following subjects:
+        </p>
+        
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 3rem;">
+            {% for e in enrollments %}
+                <span class="badge" style="background-color: var(--sidebar-bg); color: white; padding: 0.5rem 1rem; font-size: 1rem;"><span style="color:var(--success);">✔</span> {{ e.subject.name }}</span>
+            {% endfor %}
+        </div>
+        
+        <div style="display: flex; justify-content: space-around; border-top: 1px dashed var(--border); padding-top: 2rem;">
+            <div>
+                <p class="text-muted" style="text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Total Score Earned</p>
+                <h3 style="color: var(--text-primary); font-size: 1.5rem;">{{ entry.all_time_points }} Points</h3>
+            </div>
+            <div>
+                <p class="text-muted" style="text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">Date Granted</p>
+                <h3 style="color: var(--text-primary); font-size: 1.5rem;">{% now "F j, Y" %}</h3>
+            </div>
+        </div>
+
+        <a href="{% url 'student_dashboard' %}" class="btn btn-outline mt-3" style="margin-top: 2rem;">Return to Dashboard</a>
+    </div>
+</div>
+
+<style>
+/* Simple CSS Confetti Animation */
+.confetti-container {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: var(--primary);
+    animation: fall 5s infinite;
+}
+
+@keyframes fall {
+    0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+</style>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const container = document.querySelector('.confetti-container');
+        const colors = ['#4F8EF7', '#22C55E', '#F59E0B', '#EF4444', '#8b5cf6'];
+        
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.animationDelay = Math.random() * 5 + 's';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            container.appendChild(confetti);
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

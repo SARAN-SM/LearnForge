@@ -1,0 +1,11 @@
+Django==4.2.9
+mysqlclient==2.2.4
+g4f==0.3.3.0
+duckduckgo-search==6.3.0
+nest-asyncio==1.6.0
+curl-cffi==0.7.3
+markdown==3.5.2
+PyInstaller==6.3.0
+PyPDF2
+youtube-transcript-api
+google-generativeai

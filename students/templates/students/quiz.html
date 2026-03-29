@@ -1,0 +1,128 @@
+{% extends 'student_base.html' %}
+{% block title %}Quiz - {{ quiz.material.title }}{% endblock %}
+{% block topbar_title %}Knowledge Check{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 0 auto; padding: 2rem;">
+    <!-- Progress Bar -->
+    <div style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+            <span style="font-weight: 600; color: var(--text-muted);" id="questionCounter">Question 1 of 10</span>
+            <span class="badge badge-beginner">{{ quiz.level }}</span>
+        </div>
+        <div style="width: 100%; height: 8px; background: var(--border); border-radius: 4px;">
+            <div id="progressBar" style="width: 10%; height: 100%; background: var(--primary); border-radius: 4px; transition: width 0.3s ease;"></div>
+        </div>
+    </div>
+
+    <!-- Quiz Form -->
+    <form method="POST" id="quizForm">
+        {% csrf_token %}
+        
+        <div id="questionContainer">
+            {% for q in questions %}
+            <div class="question-block" id="qblock_{{ forloop.counter }}" style="display: {% if forloop.first %}block{% else %}none{% endif %};">
+                <h2 style="font-size: 1.4rem; margin-bottom: 1.5rem; line-height: 1.5;">{{ q.question_text }}</h2>
+                
+                <input type="hidden" name="question_{{ q.id }}" id="hidden_q_{{ q.id }}" required>
+                
+                <div class="options-grid" style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
+                    <button type="button" class="btn btn-outline option-btn" data-val="0" data-qid="{{ q.id }}" style="text-align: left; justify-content: flex-start; padding: 1rem; font-size: 1.05rem; white-space: normal; height: auto;">
+                        <span style="font-weight: 600; margin-right: 1rem; color: var(--primary);">A</span> {{ q.option_a }}
+                    </button>
+                    <button type="button" class="btn btn-outline option-btn" data-val="1" data-qid="{{ q.id }}" style="text-align: left; justify-content: flex-start; padding: 1rem; font-size: 1.05rem; white-space: normal; height: auto;">
+                        <span style="font-weight: 600; margin-right: 1rem; color: var(--primary);">B</span> {{ q.option_b }}
+                    </button>
+                    <button type="button" class="btn btn-outline option-btn" data-val="2" data-qid="{{ q.id }}" style="text-align: left; justify-content: flex-start; padding: 1rem; font-size: 1.05rem; white-space: normal; height: auto;">
+                        <span style="font-weight: 600; margin-right: 1rem; color: var(--primary);">C</span> {{ q.option_c }}
+                    </button>
+                    <button type="button" class="btn btn-outline option-btn" data-val="3" data-qid="{{ q.id }}" style="text-align: left; justify-content: flex-start; padding: 1rem; font-size: 1.05rem; white-space: normal; height: auto;">
+                        <span style="font-weight: 600; margin-right: 1rem; color: var(--primary);">D</span> {{ q.option_d }}
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="display: flex; justify-content: flex-end;">
+            <button type="button" id="nextBtn" class="btn btn-primary disabled" style="padding: 1rem 2rem; font-size: 1.1rem;" disabled>
+                Next Question ➔
+            </button>
+            <button type="submit" id="submitBtn" class="btn btn-success" style="padding: 1rem 2rem; font-size: 1.1rem; display: none;">
+                Submit Quiz ✓
+            </button>
+        </div>
+    </form>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let currentIndex = 1;
+        const total = {{ questions|length }};
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const counter = document.getElementById('questionCounter');
+        const progress = document.getElementById('progressBar');
+        
+        // Option selection logic
+        const optionBtns = document.querySelectorAll('.option-btn');
+        optionBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Find parent grid
+                const grid = this.closest('.options-grid');
+                // Remove selection from others
+                grid.querySelectorAll('.option-btn').forEach(b => {
+                    b.classList.remove('selected');
+                    b.style.backgroundColor = 'transparent';
+                    b.style.borderColor = 'var(--border)';
+                });
+                // Add to clicked
+                this.classList.add('selected');
+                this.style.backgroundColor = 'rgba(79, 142, 247, 0.1)';
+                this.style.borderColor = 'var(--primary)';
+                
+                // Update hidden input
+                const qid = this.getAttribute('data-qid');
+                const val = this.getAttribute('data-val');
+                document.getElementById('hidden_q_' + qid).value = val;
+                
+                // Enable next button
+                if(currentIndex < total) {
+                    nextBtn.classList.remove('disabled');
+                    nextBtn.removeAttribute('disabled');
+                } else {
+                    submitBtn.removeAttribute('disabled');
+                }
+            });
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            document.getElementById('qblock_' + currentIndex).style.display = 'none';
+            currentIndex++;
+            document.getElementById('qblock_' + currentIndex).style.display = 'block';
+            
+            counter.textContent = `Question ${currentIndex} of ${total}`;
+            progress.style.width = `${(currentIndex / total) * 100}%`;
+            
+            if (currentIndex === total) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-flex';
+                // Check if last question is already selected (e.g. they clicked back, but we don't have back button)
+                const lastGrid = document.getElementById('qblock_' + total).querySelector('.options-grid');
+                if(!lastGrid.querySelector('.selected')) {
+                    submitBtn.setAttribute('disabled', 'true');
+                }
+            } else {
+                // Check if current question is selected
+                const currGrid = document.getElementById('qblock_' + currentIndex).querySelector('.options-grid');
+                if(!currGrid.querySelector('.selected')) {
+                    nextBtn.classList.add('disabled');
+                    nextBtn.setAttribute('disabled', 'true');
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'student_base.html' %}
+{% block title %}Learn - {{ material.title }}{% endblock %}
+{% block topbar_title %}Study Material{% endblock %}
+
+{% block content %}
+<div class="grid" style="grid-template-columns: 2fr 1fr; align-items: start; gap: 2rem;">
+    <!-- Left Column: Content -->
+    <div class="card" style="padding: 2rem;">
+        <h1 style="color: var(--primary);">{{ material.title }}</h1>
+        <div style="margin-bottom: 1.5rem;">
+            <span class="badge badge-beginner" style="background-color: var(--bg); border: 1px solid var(--border); color: var(--text-muted);">{{ material.level }}</span>
+        </div>
+        
+        {% if material.youtube_url %}
+        <div style="margin-bottom: 2rem; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);">
+            <!-- Convert standard youtube url to embed url via simple JS or assume we can just use a link if embedding is complex. Actually, let's just use a clean link or a styled button. -->
+            <div style="background: var(--sidebar-bg); padding: 1rem; color: white; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <strong>▶️ Video Lesson Attached</strong>
+                </div>
+                <a href="{{ material.youtube_url }}" target="_blank" class="btn" style="background: #EF4444; color: white;">Watch on YouTube</a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if material.file_upload %}
+        <div style="margin-bottom: 2rem;">
+            <div style="background: var(--bg); padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <strong>📄 Document Attached</strong>
+                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">You can view or download the original file.</p>
+                </div>
+                <a href="{{ material.file_upload.url }}" target="_blank" class="btn btn-outline">View File</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="markdown-content" style="line-height: 1.7; color: var(--text-primary); font-size: 1.05rem;">
+            {{ html_content|safe }}
+        </div>
+    </div>
+    
+    <!-- Right Column: Sticky Timer Panel -->
+    <div class="card timer-panel" style="position: sticky; top: 100px; text-align: center; padding: 2rem;">
+        <h2 style="margin-bottom: 0.5rem;">Time to Focus</h2>
+        <p class="text-muted" style="margin-bottom: 1.5rem; font-size: 0.9rem;">Please read the material thoroughly.</p>
+        
+        <div style="font-size: 3rem; font-weight: 700; color: var(--primary); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: center; width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--border); margin: 0 auto 1.5rem;">
+            <span id="countdownDisplay">15</span>s
+        </div>
+        
+        {% if quiz %}
+            <a href="{% url 'student_quiz' quiz.id %}" id="quizBtn" class="btn btn-primary disabled" style="width: 100%; pointer-events: none; opacity: 0.5;">🔒 Read material to unlock quiz</a>
+        {% else %}
+             <button disabled class="btn btn-outline disabled" style="width: 100%;">⚠️ Quiz Generation Pending</button>
+             <p class="text-muted mt-1" style="font-size:0.8rem;">Refresh page later.</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+/* Markdown styling */
+.markdown-content h1, .markdown-content h2, .markdown-content h3 { margin-top: 1.5rem; margin-bottom: 0.75rem; }
+.markdown-content p { margin-bottom: 1rem; }
+.markdown-content ul, .markdown-content ol { margin-left: 1.5rem; margin-bottom: 1rem; }
+
+@media (max-width: 767px) {
+    .grid { grid-template-columns: 1fr; }
+    .timer-panel {
+        order: -1; /* Moves timer to top on mobile */
+        position: relative; top: 0;
+    }
+}
+</style>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const materialId = "{{ material.id }}";
+        const studentId = "{{ request.user.id }}";
+        const storageKey = `timer_done_${materialId}_${studentId}`;
+        const quizBtn = document.getElementById('quizBtn');
+        const display = document.getElementById('countdownDisplay');
+        
+        let timeLeft = 15;
+        
+        function unlockQuiz() {
+            localStorage.setItem(storageKey, "true");
+            display.textContent = "0";
+            display.parentElement.style.borderColor = "var(--success)";
+            display.style.color = "var(--success)";
+            
+            if (quizBtn) {
+                quizBtn.classList.remove('disabled');
+                quizBtn.style.pointerEvents = 'auto';
+                quizBtn.style.opacity = '1';
+                quizBtn.style.backgroundColor = 'var(--primary)';
+                quizBtn.innerHTML = '✅ Take Quiz Now';
+            }
+        }
+        
+        // Check if already completed timer
+        if (localStorage.getItem(storageKey) === "true") {
+            unlockQuiz();
+        } else {
+            const timer = setInterval(() => {
+                timeLeft--;
+                display.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    unlockQuiz();
+                }
+            }, 1000);
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

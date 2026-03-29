@@ -1,0 +1,61 @@
+{% extends 'student_base.html' %}
+{% block title %}{{ enrollment.subject.name }} - Details{% endblock %}
+{% block topbar_title %}{{ enrollment.subject.name }}{% endblock %}
+
+{% block content %}
+<div class="mb-3" style="display: flex; gap: 1rem; align-items: flex-end;">
+    <a href="{% url 'student_dashboard' %}" class="btn btn-outline" aria-label="Back">←</a>
+    <div>
+        <h1 style="color: var(--primary); margin-bottom: 0.2rem;">{{ enrollment.subject.name }} Navigation</h1>
+        <p class="text-muted">Study materials available for your path.</p>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <h2 style="margin-bottom: 1rem;">Available Materials</h2>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--border);">
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Topic</th>
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Level</th>
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for material in materials %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 1rem 0.5rem; font-weight: 500;">{{ material.title }}</td>
+                    <td style="padding: 1rem 0.5rem;">
+                        {% if material.level == 'BEGINNER' %}
+                            <span class="badge badge-beginner">Beginner</span>
+                        {% elif material.level == 'INTERMEDIATE' %}
+                            <span class="badge badge-intermediate">Intermediate</span>
+                        {% else %}
+                            <span class="badge badge-advanced">Advanced</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem 0.5rem;">
+                        {% if enrollment.subject_status == 'COMPLETED' %}
+                            <a href="{% url 'student_learn' material.id %}" class="btn btn-outline text-success">Review</a>
+                        {% elif material.level == enrollment.current_level %}
+                            <a href="{% url 'student_learn' material.id %}" class="btn btn-primary">Start Learning</a>
+                        {% elif material.level == 'BEGINNER' and enrollment.beginner_done %}
+                            <a href="{% url 'student_learn' material.id %}" class="btn btn-outline text-success">Review</a>
+                        {% elif material.level == 'INTERMEDIATE' and enrollment.intermediate_done %}
+                            <a href="{% url 'student_learn' material.id %}" class="btn btn-outline text-success">Review</a>
+                        {% else %}
+                            <button class="btn btn-outline" disabled title="Unlock previous levels first">🔒 Locked</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="padding: 2rem; text-align: center; color: var(--text-muted);">No materials available for this subject yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

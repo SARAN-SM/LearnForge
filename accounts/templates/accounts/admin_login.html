@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Admin Login - Remedial App{% endblock %}
+
+{% block content %}
+<div class="grid" style="min-height: 80vh; place-items: center;">
+    <div class="card" style="width: 100%; max-width: 400px; padding: 2rem; border-top: 4px solid var(--sidebar-bg);">
+        <div class="text-center mb-2">
+            <h1 style="color: var(--sidebar-bg); margin-bottom: 0.5rem;">Admin Login</h1>
+            <p class="text-muted">Staff and instructor access only.</p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-2">
+                <label for="username">Admin Username</label>
+                <input type="text" id="username" name="username" required placeholder="admin">
+            </div>
+            <div class="mb-3">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="••••••••">
+            </div>
+            
+            <button type="submit" class="btn" style="width: 100%; background-color: var(--sidebar-bg); color: white;">Access Portal</button>
+        </form>
+        
+        <div class="text-center mt-2">
+            <a href="{% url 'landing' %}" class="text-muted" style="font-size: 0.9rem;">← Back to Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

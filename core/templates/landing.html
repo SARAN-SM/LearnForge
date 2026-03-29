@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); align-items: center; min-height: 80vh;">
+    <div style="padding: 2rem;">
+        <h1 style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary);">Student Remedial Learning</h1>
+        <p style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 2rem;">
+            Master your subjects, step by step. A dedicated platform specifically engineered to help you achieve your true potential.
+        </p>
+    </div>
+    
+    <div class="grid" style="gap: 2rem;">
+        <div class="card" style="text-align: center; padding: 3rem 2rem;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🎓</div>
+            <h2>Student Portal</h2>
+            <p class="text-muted mb-2">Access your study materials, take quizzes, and track progress.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="{% url 'student_login' %}" class="btn btn-primary" style="flex: 1;">Login</a>
+                <a href="{% url 'student_signup' %}" class="btn btn-outline" style="flex: 1;">Sign Up</a>
+            </div>
+        </div>
+
+        <div class="card" style="text-align: center; padding: 3rem 2rem; background-color: var(--sidebar-bg); color: white;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🛡️</div>
+            <h2 style="color: white;">Admin Portal</h2>
+            <p style="color: var(--sidebar-text); margin-bottom: 1rem;">For teachers and administrators to manage content.</p>
+            <a href="{% url 'admin_login' %}" class="btn" style="background-color: rgba(255,255,255,0.1); color: white; width: 100%;">Admin Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

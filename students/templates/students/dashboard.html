@@ -1,0 +1,78 @@
+{% extends 'student_base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+{% block topbar_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-3" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+        <h1 style="color: var(--primary); margin-bottom: 0.2rem;">Welcome back, {{ user.username }}</h1>
+        <p class="text-muted">Continue your learning journey.</p>
+    </div>
+    
+    <div class="card text-center" style="display: inline-block; padding: 0.5rem 1.5rem; border: 1px solid var(--primary); background: rgba(79, 142, 247, 0.05);">
+        <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Total Points</div>
+        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">⭐ {{ points }}</div>
+    </div>
+</div>
+
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+    {% for enrollment in enrollments %}
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="font-size: 2rem; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: var(--bg); border-radius: var(--radius); border: 1px solid var(--border);">
+                    📚
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 0;">{{ enrollment.subject.name }}</h3>
+                </div>
+            </div>
+            
+            {% if enrollment.subject_status == 'COMPLETED' %}
+                <span class="badge badge-advanced">✔ Completed</span>
+            {% else %}
+                <span class="badge badge-intermediate">In Progress</span>
+            {% endif %}
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem;">
+                <span class="text-muted">Current Level:</span>
+                <strong style="color: var(--text-primary);">{{ enrollment.current_level }}</strong>
+            </div>
+            
+            <!-- Progress calculation -->
+            {% if enrollment.subject_status == 'COMPLETED' %}
+                <div style="width: 100%; background: var(--border); height: 8px; border-radius: 4px;">
+                    <div style="width: 100%; background: var(--success); height: 100%; border-radius: 4px;"></div>
+                </div>
+                <div class="text-muted text-center mt-1" style="font-size: 0.8rem;">3 of 3 levels complete</div>
+            {% elif enrollment.current_level == 'ADVANCED' %}
+                <div style="width: 100%; background: var(--border); height: 8px; border-radius: 4px;">
+                    <div style="width: 66%; background: var(--warning); height: 100%; border-radius: 4px;"></div>
+                </div>
+                <div class="text-muted text-center mt-1" style="font-size: 0.8rem;">2 of 3 levels complete</div>
+            {% elif enrollment.current_level == 'INTERMEDIATE' %}
+                <div style="width: 100%; background: var(--border); height: 8px; border-radius: 4px;">
+                    <div style="width: 33%; background: var(--primary); height: 100%; border-radius: 4px;"></div>
+                </div>
+                <div class="text-muted text-center mt-1" style="font-size: 0.8rem;">1 of 3 levels complete</div>
+            {% else %}
+                <div style="width: 100%; background: var(--border); height: 8px; border-radius: 4px;">
+                    <div style="width: 5%; background: var(--primary); height: 100%; border-radius: 4px;"></div>
+                </div>
+                <div class="text-muted text-center mt-1" style="font-size: 0.8rem;">0 of 3 levels complete</div>
+            {% endif %}
+        </div>
+        
+        <a href="{% url 'student_subject_detail' enrollment.subject.id %}" class="btn btn-outline" style="width: 100%;">
+            {% if enrollment.subject_status == 'COMPLETED' %}Review Material{% else %}Continue Learning{% endif %}
+        </a>
+    </div>
+    {% empty %}
+    <div class="card text-center" style="grid-column: 1 / -1; padding: 3rem;">
+        <p class="text-muted">You are not enrolled in any subjects.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

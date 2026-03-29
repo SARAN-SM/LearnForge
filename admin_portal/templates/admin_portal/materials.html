@@ -1,0 +1,52 @@
+{% extends 'admin_base.html' %}
+{% block title %}Manage Materials{% endblock %}
+{% block topbar_title %}Materials{% endblock %}
+
+{% block content %}
+<div class="mb-3" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+        <h1 style="color: var(--primary); margin-bottom: 0.5rem;">Study Materials</h1>
+        <p class="text-muted">Content currently active in the system.</p>
+    </div>
+    <a href="{% url 'admin_material_new' %}" class="btn btn-primary">➕ Post New Material</a>
+</div>
+
+<div class="card">
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 2px solid var(--border);">
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Title</th>
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Subject</th>
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Level</th>
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Posted By</th>
+                    <th style="padding: 1rem 0.5rem; color: var(--text-muted);">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for material in materials %}
+                <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 1rem 0.5rem; font-weight: 500;">{{ material.title }}</td>
+                    <td style="padding: 1rem 0.5rem;">{{ material.subject.name }}</td>
+                    <td style="padding: 1rem 0.5rem;">
+                        {% if material.level == 'BEGINNER' %}
+                            <span class="badge badge-beginner">Beginner</span>
+                        {% elif material.level == 'INTERMEDIATE' %}
+                            <span class="badge badge-intermediate">Intermediate</span>
+                        {% else %}
+                            <span class="badge badge-advanced">Advanced</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem 0.5rem; color: var(--text-muted);">{{ material.posted_by.username|default:"System" }}</td>
+                    <td style="padding: 1rem 0.5rem; color: var(--text-muted); font-size: 0.85rem;">{{ material.posted_at|date:"M d, Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">No materials have been posted yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
