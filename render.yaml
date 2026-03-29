@@ -3,7 +3,7 @@ services:
     name: learnforge
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn remedial_app.wsgi:application"
+    startCommand: "gunicorn remedial_app.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
