@@ -41,7 +41,7 @@ def get_local_ip():
     except:
         return '127.0.0.1'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', get_local_ip(), '0.0.0.0']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', get_local_ip(), '0.0.0.0', '.onrender.com']
 
 
 # Application definition
@@ -62,6 +62,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -138,6 +139,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Enable WhiteNoise's GZip compression of static assets.
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

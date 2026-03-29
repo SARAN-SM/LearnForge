@@ -9,3 +9,5 @@ PyInstaller==6.3.0
 PyPDF2
 youtube-transcript-api
 google-generativeai
+gunicorn==21.2.0
+whitenoise==6.6.0
